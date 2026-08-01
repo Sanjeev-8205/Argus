@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  # Services will be added as phases progress
+  # qdrant:
+  # fastapi:
+  # etc.
+
+networks:
+  cadastre:
+    driver: bridge
