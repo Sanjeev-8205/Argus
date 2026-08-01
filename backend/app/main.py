@@ -1,13 +1,16 @@
 """FastAPI application entry point."""
 
 from fastapi import FastAPI
+from app.core.config import settings
 
-app = FastAPI(title="Cadastre", version="0.1.0")
+app = FastAPI(title=settings.app_name, version=settings.app_version)
 
 @app.get("/")
 async def root():
     return {
-        "project": "Cadastre",
+        "project": settings.app_name,
+        "version": settings.app_version,
+        "debug": settings.debug,
         "status": "running"
     }
 
