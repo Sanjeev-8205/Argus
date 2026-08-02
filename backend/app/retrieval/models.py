@@ -27,3 +27,11 @@ class EnrichedDocument:
     source_path: Path
     text: str
     metadata: DocumentMetadata
+
+@dataclass
+class DocumentChunk:
+    chunk_id: str
+    document_id: str
+    chunk_index: int
+    text: str
+    metadata: DocumentMetadata
