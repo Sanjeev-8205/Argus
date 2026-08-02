@@ -1,10 +1,9 @@
-from app.retrieval.models import (
-    EnrichedDocument, DocumentChunk
-)
+from app.retrieval.models import EnrichedDocument, DocumentChunk
+from app.retrieval.tokenizer import get_tokenizer
 
 class FixedSizeChunker:
 
-    def __init__(self, chunk_size=500, overlap=50):
+    def __init__(self, chunk_size=512, overlap=64):
 
         if overlap >= chunk_size:
             raise ValueError(
@@ -14,17 +13,27 @@ class FixedSizeChunker:
         self.chunk_size = chunk_size
         self.overlap = overlap
 
+        self.tokenizer = get_tokenizer()
+
     def chunk(self, document: EnrichedDocument) -> list[DocumentChunk]:
+
+        token_ids = self.tokenizer.encode(
+            document.text, add_special_tokens=False
+        )
 
         chunks = []
         start = 0
         chunk_index = 0
 
-        while start < len(document.text):
+        while start < len(token_ids):
 
             end = start + self.chunk_size
 
-            chunk_text = document.text[start: end]
+            chunk_tokens = token_ids[start: end]
+
+            chunk_text = self.tokenizer.decode(
+                chunk_tokens, skip_special_tokens = True
+            )
 
             chunks.append(
                 DocumentChunk(
