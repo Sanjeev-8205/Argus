@@ -11,6 +11,11 @@ class Settings(BaseSettings):
     port: int = 8000
 
     embedding_model: str = "BAAI/bge-large-en-v1.5"
+    embedding_device: str = "cpu"
+
+    qdrant_host: str = "localhost"
+    qdrant_port: int = 6333
+    qdrant_collection: str = "cadastre_documents"
 
     model_config = SettingsConfigDict(
         env_file='.env',
