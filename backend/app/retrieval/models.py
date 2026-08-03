@@ -43,6 +43,6 @@ class EmbeddedChunk:
 
 @dataclass
 class IngestionResult:
-    documents_processed: int
-    chunks_created: int
-    embeddings_generated: int
+    documents_processed: int
+    chunks_created: int
+    embeddings_generated: int
