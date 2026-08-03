@@ -1,11 +1,21 @@
-version: "3.8"
+version: "3.9"
 
 services:
-  # Services will be added as phases progress
-  # qdrant:
-  # fastapi:
-  # etc.
 
-networks:
-  cadastre:
-    driver: bridge
+  qdrant:
+
+    image: qdrant/qdrant:latest
+
+    container_name: cadastre-qdrant
+
+    ports:
+      - "6333:6333"
+
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+    restart: unless-stopped
+
+volumes:
+
+  qdrant_data:

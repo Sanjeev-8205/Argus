@@ -40,3 +40,9 @@ class DocumentChunk:
 class EmbeddedChunk:
     chunk: DocumentChunk
     embedding: list[float]
+
+@dataclass
+class IngestionResult:
+    documents_processed: int
+    chunks_created: int
+    embeddings_generated: int

@@ -23,7 +23,6 @@ cadastre/
 ├── backend/       Production code and tests
 ├── frontend/      UI (Phase 7)
 ├── docs/          Architecture and design
-├── scripts/       Utilities and preprocessing
 ├── .gitignore
 ├── README.md
 ├── LICENSE
