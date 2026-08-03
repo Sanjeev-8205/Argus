@@ -35,3 +35,8 @@ class DocumentChunk:
     chunk_index: int
     text: str
     metadata: DocumentMetadata
+
+@dataclass
+class EmbeddedChunk:
+    chunk: DocumentChunk
+    embedding: list[float]
