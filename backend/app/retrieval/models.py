@@ -46,3 +46,8 @@ class IngestionResult:
     documents_processed: int
     chunks_created: int
     embeddings_generated: int
+
+@dataclass
+class RetrievalResult:
+    chunk: DocumentChunk
+    score: float
