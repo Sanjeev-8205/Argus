@@ -46,6 +46,7 @@ class IngestionResult:
     documents_processed: int
     chunks_created: int
     embeddings_generated: int
+    document_chunks: list[DocumentChunk]
 
 @dataclass
 class RetrievalResult:
