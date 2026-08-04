@@ -1,7 +1,7 @@
 from app.retrieval.bm25 import BM25Indexer
 from app.retrieval.models import DocumentChunk, DocumentMetadata
 
-def test_bm25():
+def test_bm25_indexer():
 
     chunks = [
         DocumentChunk(
