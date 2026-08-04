@@ -16,31 +16,33 @@ class IngestionPipeline:
         self.cleaner = TextCleaner()
         self.extractor = MetadataExtractor()
         self.chunker = FixedSizeChunker()
-        self.embeddor = EmbeddingGenerator()
+        self.embedder = EmbeddingGenerator()
         self.indexer = QdrantIndexer()
 
-        self.loader = DocumentLoader(data_directory)
+        self.docs = DocumentLoader(data_directory).load()
 
     def run(self):
 
-        documents = self.loader.load()
-        print(f"Loaded {len(documents)} documents")
+        print(f"Loaded {len(self.docs)} documents")
 
+        document_chunks = []
         embedded_chunks = []
-        for document in documents:
+        for document in self.docs:
 
             cleaned_document = self.cleaner.clean(document)
             enriched_document = self.extractor.extract(cleaned_document)
-            document_chunks = self.chunker.chunk(enriched_document)
+            doc_chunks = self.chunker.chunk(enriched_document)
+            document_chunks.extend(doc_chunks)
 
-            embedded_document = self.embeddor.embed(document_chunks)
+            embedded_document = self.embedder.embed(doc_chunks)
 
             embedded_chunks.extend(embedded_document)
 
         self.indexer.index(embedded_chunks)
 
         return IngestionResult(
-            documents_processed=len(documents),
-            chunks_created=len(embedded_chunks),
+            documents_processed=len(self.docs),
+            chunks_created=len(document_chunks),
             embeddings_generated=len(embedded_chunks),
+            document_chunks=document_chunks
         )
