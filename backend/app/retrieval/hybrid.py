@@ -7,12 +7,10 @@ class HybridRetriever:
 
     RRF_K = 60
 
-    def __init__(self, document_chunks: list[DocumentChunk]):
+    def __init__(self, bm25: BM25):
 
         self.dense = DenseRetriever()
-        self.bm25 = BM25()
-
-        self.bm25.build(document_chunks)
+        self.bm25 = bm25
 
     def retriever(self, query: str, top_k: int = 5) -> list[RetrievalResult]:
 

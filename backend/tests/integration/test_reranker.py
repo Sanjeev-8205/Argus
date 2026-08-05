@@ -1,23 +1,23 @@
-from app.retrieval.reranker import Reranker
-from app.retrieval.pipeline import IngestionPipeline
+from app.retrieval.reranker import CrossEncoderReranker
+from app.retrieval.bm25 import BM25
 from app.retrieval.hybrid import HybridRetriever
 
-from pathlib import Path
+from app.core.config import settings
 
 def test_reranker():
 
-    pipeline = IngestionPipeline(Path("data/raw/hr"))
-    ingestion_result = pipeline.run()
+    bm25 = BM25()
+    bm25.load(settings.bm25_index_path)
 
     query = "employee leave attendance benefits compensation conduct policy"
 
-    hybrid_retriever = HybridRetriever(ingestion_result.document_chunks)
+    hybrid_retriever = HybridRetriever(bm25)
 
     hybrid_results = hybrid_retriever.retriever(
         query, 10
     )
 
-    reranker = Reranker()
+    reranker = CrossEncoderReranker()
     
     reranker_results = reranker.rerank(
         query, hybrid_results, 5

@@ -1,11 +1,8 @@
 from app.services.retrieval_service import RetrievalService
 
-from pathlib import Path
-from app.core.config import settings
-
 def test_retrieval_service():
 
-    retrieval_service = RetrievalService(data_directory=Path(settings.data_directory))
+    retrieval_service = RetrievalService()
 
     results = retrieval_service.retrieve(
         "cash flow and budget approval policy"

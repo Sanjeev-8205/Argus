@@ -9,7 +9,8 @@ class RetrievalService:
 
     def __init__(self):
 
-        self.bm25 = BM25().load(settings.bm25_index_path)
+        self.bm25 = BM25()
+        self.bm25.load(settings.bm25_index_path)
 
         self.hybrid_retriever = HybridRetriever(self.bm25)
         self.reranker = CrossEncoderReranker()

@@ -1,15 +1,15 @@
 from pathlib import Path
 
+from app.retrieval.bm25 import BM25
 from app.retrieval.hybrid import HybridRetriever
-from app.retrieval.pipeline import IngestionPipeline
+from app.core.config import settings
 
 def test_hybrid_retriever():
 
-    pipeline = IngestionPipeline(Path("data/raw/finance"))
+    bm25 = BM25()
+    bm25.load(settings.bm25_index_path)
 
-    ingestion_result = pipeline.run()
-
-    hybrid_retriever = HybridRetriever(ingestion_result.document_chunks)
+    hybrid_retriever = HybridRetriever(bm25)
 
     results = hybrid_retriever.retriever(
         "company policy leave benefits", 3
