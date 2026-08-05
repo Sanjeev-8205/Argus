@@ -1,5 +1,7 @@
 from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pathlib import Path
+from pydantic import Field
 
 class Settings(BaseSettings):
     app_name: str = "Cadastre"
@@ -16,6 +18,12 @@ class Settings(BaseSettings):
     qdrant_host: str = "localhost"
     qdrant_port: int = 6333
     qdrant_collection: str = "cadastre_documents"
+
+    reranker_model: str = "BAAI/bge-reranker-base"
+
+    data_directory: Path
+
+    bm25_index_path: Path = Field(default=Path)
 
     model_config = SettingsConfigDict(
         env_file='.env',

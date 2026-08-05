@@ -3,6 +3,9 @@ from rank_bm25 import BM25Okapi
 from app.retrieval.models import DocumentChunk, RetrievalResult
 import numpy as np
 
+import pickle
+from pathlib import Path
+
 class BM25:
 
     def __init__(self):
@@ -49,3 +52,21 @@ class BM25:
     
             return results
 
+    def save(self, path: Path):
+
+        with open(path, "wb") as f:
+            pickle.dump(
+                {
+                    "index": self.index,
+                    "chunks": self.chunks
+                },
+                f
+            )
+
+    def load(self, path: Path):
+
+        with open(path, "rb") as f:
+            data = pickle.load(f)
+
+        self.index = data["index"]
+        self.chunks = data["chunks"]
