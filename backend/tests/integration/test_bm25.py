@@ -8,6 +8,8 @@ def test_bm25_retriever():
     pipeline = IngestionPipeline(Path("data/raw/finance"))
 
     pipeline_results = pipeline.run()
+    assert pipeline_results.documents_processed > 0
+    assert len(pipeline_results.document_chunks) > 0
 
     bm25_indexer = BM25Indexer()
 
