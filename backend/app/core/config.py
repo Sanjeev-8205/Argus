@@ -21,9 +21,9 @@ class Settings(BaseSettings):
 
     reranker_model: str = "BAAI/bge-reranker-base"
 
-    data_directory: Path
+    data_directory: Path = Path("data/raw")
 
-    bm25_index_path: Path = Field(default=Path)
+    bm25_index_path: Path = Field(default=Path("data/bm25/index.pkl"))
 
     model_config = SettingsConfigDict(
         env_file='.env',

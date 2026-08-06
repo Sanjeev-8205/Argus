@@ -1,9 +1,21 @@
 """FastAPI application entry point."""
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
+
+from app.services.retrieval_service import RetrievalService
 from app.core.config import settings
 
-app = FastAPI(title=settings.app_name, version=settings.app_version)
+from app.routes.retrieval_route import router as retrieval_router
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.retrieval_service = RetrievalService()
+    yield
+
+app = FastAPI(lifespan=lifespan, title=settings.app_name, version=settings.app_version)
+
+app.include_router(retrieval_router)
 
 @app.get("/")
 async def root():
