@@ -25,6 +25,8 @@ class Settings(BaseSettings):
 
     bm25_index_path: Path = Field(default=Path("data/bm25/index.pkl"))
 
+    gemini_api_key: str = Field(default="gemini_api_key")
+
     model_config = SettingsConfigDict(
         env_file='.env',
         env_file_encoding="utf-8",
