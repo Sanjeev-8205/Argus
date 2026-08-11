@@ -1,5 +1,7 @@
 import re
-from app.retrieval.models import RawDocument, CleanDocument
+
+from app.retrieval.models import CleanDocument, RawDocument
+
 
 class TextCleaner:
     def clean(self, document: RawDocument) -> CleanDocument:

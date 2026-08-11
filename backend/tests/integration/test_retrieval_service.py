@@ -1,5 +1,6 @@
 from app.services.retrieval_service import RetrievalService
 
+
 def test_retrieval_service():
 
     retrieval_service = RetrievalService()

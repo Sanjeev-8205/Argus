@@ -1,7 +1,8 @@
-from app.retrieval.pipeline import IngestionPipeline
-from app.retrieval.bm25 import BM25
-
 from pathlib import Path
+
+from app.retrieval.bm25 import BM25
+from app.retrieval.pipeline import IngestionPipeline
+
 
 def test_bm25_retriever():
 

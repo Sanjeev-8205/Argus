@@ -3,6 +3,7 @@ from pathlib import Path
 from app.retrieval.cleaning import TextCleaner
 from app.retrieval.models import RawDocument
 
+
 def test_text_cleaner():
 
     raw = RawDocument(

@@ -1,7 +1,7 @@
-from app.retrieval.retriever import DenseRetriever
 from app.retrieval.bm25 import BM25
+from app.retrieval.models import RetrievalResult
+from app.retrieval.retriever import DenseRetriever
 
-from app.retrieval.models import DocumentChunk, RetrievalResult
 
 class HybridRetriever:
 

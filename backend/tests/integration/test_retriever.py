@@ -1,5 +1,6 @@
 from app.retrieval.retriever import DenseRetriever
 
+
 def test_dense_retriever():
 
     retriever = DenseRetriever()

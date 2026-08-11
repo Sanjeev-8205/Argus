@@ -1,13 +1,13 @@
-from app.retrieval.ingest import DocumentLoader
-from app.retrieval.cleaning import TextCleaner
-from app.retrieval.metadata import MetadataExtractor
+from pathlib import Path
+
 from app.retrieval.chunking import FixedSizeChunker
+from app.retrieval.cleaning import TextCleaner
 from app.retrieval.embedding import EmbeddingGenerator
 from app.retrieval.indexer import QdrantIndexer
-
+from app.retrieval.ingest import DocumentLoader
+from app.retrieval.metadata import MetadataExtractor
 from app.retrieval.models import IngestionResult
 
-from pathlib import Path
 
 class IngestionPipeline:
 

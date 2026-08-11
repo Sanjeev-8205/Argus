@@ -1,5 +1,6 @@
-from app.retrieval.models import EnrichedDocument, DocumentChunk
+from app.retrieval.models import DocumentChunk, EnrichedDocument
 from app.retrieval.tokenizer import get_tokenizer
+
 
 class FixedSizeChunker:
 

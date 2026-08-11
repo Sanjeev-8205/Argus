@@ -1,8 +1,9 @@
 from pathlib import Path
 
-from app.retrieval.metadata import MetadataExtractor
 from app.retrieval.cleaning import TextCleaner
+from app.retrieval.metadata import MetadataExtractor
 from app.retrieval.models import RawDocument
+
 
 def test_department_extraction():
 

@@ -1,5 +1,7 @@
-from app.retrieval.pipeline import IngestionPipeline
 from pathlib import Path
+
+from app.retrieval.pipeline import IngestionPipeline
+
 
 def test_pipeline():
 

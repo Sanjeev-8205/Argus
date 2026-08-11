@@ -1,10 +1,11 @@
+import pickle
+from pathlib import Path
+
+import numpy as np
 from rank_bm25 import BM25Okapi
 
 from app.retrieval.models import DocumentChunk, RetrievalResult
-import numpy as np
 
-import pickle
-from pathlib import Path
 
 class BM25:
 

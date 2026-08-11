@@ -1,11 +1,12 @@
+from uuid import NAMESPACE_DNS, uuid5
+
 from qdrant_client import models
 from qdrant_client.models import PointStruct
 
 from app.core.config import settings
-from app.retrieval.qdrant import get_qdrant_client
 from app.retrieval.models import EmbeddedChunk
+from app.retrieval.qdrant import get_qdrant_client
 
-from uuid import uuid5, NAMESPACE_DNS
 
 class QdrantIndexer:
     

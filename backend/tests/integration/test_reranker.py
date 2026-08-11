@@ -1,8 +1,8 @@
-from app.retrieval.reranker import CrossEncoderReranker
+from app.core.config import settings
 from app.retrieval.bm25 import BM25
 from app.retrieval.hybrid import HybridRetriever
+from app.retrieval.reranker import CrossEncoderReranker
 
-from app.core.config import settings
 
 def test_reranker():
 

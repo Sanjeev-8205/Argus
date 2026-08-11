@@ -1,4 +1,5 @@
-from typing import List, TypedDict
+from typing import TypedDict
+
 
 class AgentState(TypedDict):
     query: str
@@ -11,7 +12,7 @@ class AgentState(TypedDict):
 
     retrieved_context: str
 
-    messages: List[str]
+    messages: list[str]
 
     final_answer: str
 

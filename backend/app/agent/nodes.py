@@ -1,5 +1,6 @@
 from app.agent.state import AgentState
 
+
 def plan_node(state: AgentState) -> AgentState:
     raise NotImplementedError
 

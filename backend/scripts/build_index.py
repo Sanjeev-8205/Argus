@@ -1,6 +1,6 @@
-from app.retrieval.pipeline import IngestionPipeline
-from app.retrieval.bm25 import BM25
 from app.core.config import settings
+from app.retrieval.bm25 import BM25
+from app.retrieval.pipeline import IngestionPipeline
 
 pipeline = IngestionPipeline(settings.data_directory)
 ingestion_results = pipeline.run()

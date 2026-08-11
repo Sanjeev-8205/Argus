@@ -1,8 +1,7 @@
 from pathlib import Path
 
-from app.retrieval.models import (
-    CleanDocument, DocumentMetadata, EnrichedDocument
-)
+from app.retrieval.models import CleanDocument, DocumentMetadata, EnrichedDocument
+
 
 class MetadataExtractor:
 

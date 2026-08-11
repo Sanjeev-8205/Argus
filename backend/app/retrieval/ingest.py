@@ -2,7 +2,8 @@ from pathlib import Path
 
 from app.retrieval.models import RawDocument
 
-class DocumentLoader():
+
+class DocumentLoader:
     def __init__(self, data_directory: Path):
         self.data_directory = data_directory
 

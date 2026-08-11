@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
 
-from app.schemas.retrieval_schema import RetrievalRequest, RetrievedChunk, RetrievalResponse
+from app.schemas.retrieval_schema import RetrievalRequest, RetrievalResponse, RetrievedChunk
 from app.services.retrieval_service import RetrievalService
 
 router = APIRouter(

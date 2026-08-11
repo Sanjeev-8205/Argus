@@ -1,7 +1,9 @@
 from functools import lru_cache
 
 from sentence_transformers import CrossEncoder
+
 from app.core.config import settings
+
 
 @lru_cache
 def get_cross_encoder():

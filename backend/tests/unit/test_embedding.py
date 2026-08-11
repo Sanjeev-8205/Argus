@@ -1,7 +1,8 @@
 from pathlib import Path
 
-from app.retrieval.models import DocumentChunk, DocumentMetadata
 from app.retrieval.embedding import EmbeddingGenerator
+from app.retrieval.models import DocumentChunk, DocumentMetadata
+
 
 def test_embedding():
 

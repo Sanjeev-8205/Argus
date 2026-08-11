@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from app.retrieval.models import EnrichedDocument, DocumentMetadata
 from app.retrieval.chunking import FixedSizeChunker
+from app.retrieval.models import DocumentMetadata, EnrichedDocument
 
 
 def test_chunking():

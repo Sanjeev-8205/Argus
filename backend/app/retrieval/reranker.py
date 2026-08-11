@@ -1,5 +1,6 @@
-from app.retrieval.models import RetrievalResult
 from app.retrieval.cross_encoder import get_cross_encoder
+from app.retrieval.models import RetrievalResult
+
 
 class CrossEncoderReranker:
 

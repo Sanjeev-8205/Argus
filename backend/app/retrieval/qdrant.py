@@ -1,7 +1,9 @@
 from functools import lru_cache
 
-from app.core.config import settings
 from qdrant_client import QdrantClient
+
+from app.core.config import settings
+
 
 @lru_cache
 def get_qdrant_client() -> QdrantClient:

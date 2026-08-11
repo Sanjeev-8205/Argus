@@ -1,5 +1,7 @@
-from app.retrieval.tokenizer import get_tokenizer
 from pathlib import Path
+
+from app.retrieval.tokenizer import get_tokenizer
+
 
 def test_tokenizer():
     tokenizer = get_tokenizer()

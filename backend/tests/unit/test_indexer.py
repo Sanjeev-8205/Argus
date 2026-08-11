@@ -1,5 +1,6 @@
 from app.retrieval.indexer import QdrantIndexer
 
+
 def test_qdrant_indexer():
 
     indexer = QdrantIndexer()

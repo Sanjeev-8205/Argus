@@ -1,8 +1,8 @@
-from app.retrieval.qdrant import get_qdrant_client
-
 from app.core.config import settings
 from app.retrieval.embedding import get_sentence_transformer
 from app.retrieval.models import DocumentChunk, DocumentMetadata, RetrievalResult
+from app.retrieval.qdrant import get_qdrant_client
+
 
 class DenseRetriever:
 

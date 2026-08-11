@@ -1,5 +1,6 @@
-from app.retrieval.bm25 import BM25Indexer
+from app.retrieval.bm25 import BM25
 from app.retrieval.models import DocumentChunk, DocumentMetadata
+
 
 def test_bm25_indexer():
 
@@ -24,7 +25,7 @@ def test_bm25_indexer():
         ),
     ]
 
-    indexer = BM25Indexer()
+    indexer = BM25()
     indexer.build(chunks)
 
     assert indexer.index is not None

@@ -1,8 +1,10 @@
 from functools import lru_cache
 
-from app.retrieval.models import DocumentChunk, EmbeddedChunk
 from sentence_transformers import SentenceTransformer
+
 from app.core.config import settings
+from app.retrieval.models import DocumentChunk, EmbeddedChunk
+
 
 @lru_cache
 def get_sentence_transformer():
