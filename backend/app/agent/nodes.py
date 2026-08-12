@@ -2,7 +2,7 @@ from langchain.messages import HumanMessage, SystemMessage
 
 from app.agent.state import AgentState
 
-planner_prompt = """You are the planning component of Cadastre.
+planner_prompt = """You are the planning component of Argus.
 
 Your job is to create a concise execution plan for the user's request.
 

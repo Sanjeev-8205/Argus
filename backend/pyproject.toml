@@ -3,13 +3,13 @@ requires = ["setuptools>=45", "wheel", "setuptools-scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cadastre"
+name = "argus"
 version = "0.1.0"
 description = "Multi-phase AI system for document retrieval, reasoning, and policy validation"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "Cadastre Team"}
+    {name = "Argus Team"}
 ]
 
 requires-python = ">=3.10"

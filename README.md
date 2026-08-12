@@ -1,4 +1,4 @@
-# Cadastre
+# Argus
 
 A multi-phase AI system for document retrieval, reasoning, and policy validation.
 
@@ -19,7 +19,7 @@ See [backend/README.md](backend/README.md) for backend setup.
 ## Structure
 
 ```
-cadastre/
+argus/
 ├── backend/       Production code and tests
 ├── frontend/      UI (Phase 7)
 ├── docs/          Architecture and design

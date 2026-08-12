@@ -1,1 +1,1 @@
-"""Cadastre backend application."""
+"""Argus backend application."""

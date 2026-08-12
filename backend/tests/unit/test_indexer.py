@@ -14,4 +14,4 @@ def test_qdrant_indexer():
         for c in collections.collections
     ]
 
-    assert "cadastre_documents" in names
+    assert "argus_documents" in names

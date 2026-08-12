@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    app_name: str = "Cadastre"
+    app_name: str = "Argus"
     app_version: str = "0.1.0"
 
     debug: bool = True
@@ -19,7 +19,7 @@ class Settings(BaseSettings):
 
     qdrant_host: str = "localhost"
     qdrant_port: int = 6333
-    qdrant_collection: str = "cadastre_documents"
+    qdrant_collection: str = "argus_documents"
 
     reranker_model: str = "BAAI/bge-reranker-base"
 

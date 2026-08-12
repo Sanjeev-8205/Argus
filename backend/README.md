@@ -1,6 +1,6 @@
-# Cadastre Backend
+# Argus Backend
 
-This is the production backend for Cadastre.
+This is the production backend for Argus.
 
 ## Structure
 
