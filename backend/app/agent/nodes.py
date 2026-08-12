@@ -1,8 +1,8 @@
-from langchain.messages import HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.agent.state import AgentState
 
-planner_prompt = """You are the planning component of Argus.
+PLANNER_SYSTEM_PROMPT = """You are the planning component of Argus.
 
 Your job is to create a concise execution plan for the user's request.
 
@@ -17,12 +17,24 @@ Do not execute tools.
 Return only the execution plan.
 """
 
+ACT_SYSTEM_PROMPT = """You are the action-selection component of Argus.
+
+Given the user's request and the current execution plan, determine the next
+tool that should be called.
+
+Return:
+- the tool name
+- the arguments required by that tool
+
+Do not execute the tool yourself.
+"""
+
 def plan_node(state: AgentState, llm) -> AgentState:
 
     response = llm.invoke(
         [
             SystemMessage(
-                content=planner_prompt
+                content=PLANNER_SYSTEM_PROMPT
             ),
             HumanMessage(
                 content=f"User Query: {state["query"]}"
@@ -36,9 +48,27 @@ def plan_node(state: AgentState, llm) -> AgentState:
         "step_count": state.get("step_count", 0)
     }
     
-def act_node(state: AgentState) -> AgentState:
-    raise NotImplementedError
+def act_node(state: AgentState, llm) -> AgentState:
 
+    response = llm.invoke(
+        [
+            SystemMessage(
+                content=ACT_SYSTEM_PROMPT
+            ),
+            HumanMessage(
+                content=(
+                    f"User request:\n{state['query']}\n\n"
+                    f"Execution plan:\n{state['plan']}"
+                )
+            )
+        ]
+    )
+
+    return {
+        **state,
+        "observation": response.content
+    }
+    
 def policy_gateway_node(state: AgentState) -> AgentState:
     raise NotImplementedError
 
