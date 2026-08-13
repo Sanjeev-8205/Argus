@@ -1,6 +1,7 @@
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.agent.state import AgentState
+from app.tools.mcp_client import call_tool
 
 PLANNER_SYSTEM_PROMPT = """You are the planning component of Argus.
 
@@ -48,25 +49,23 @@ def plan_node(state: AgentState, llm) -> AgentState:
         "step_count": state.get("step_count", 0)
     }
     
-def act_node(state: AgentState, llm) -> AgentState:
+async def act_node(state: AgentState) -> AgentState:
 
-    response = llm.invoke(
-        [
-            SystemMessage(
-                content=ACT_SYSTEM_PROMPT
-            ),
-            HumanMessage(
-                content=(
-                    f"User request:\n{state['query']}\n\n"
-                    f"Execution plan:\n{state['plan']}"
-                )
-            )
-        ]
+    tool_call = {
+        "name": "retrieve_documents",
+        "argument": {"query": state["query"]}
+    }
+
+    result = await call_tool(
+        tool_name=tool_call["name"],
+        arguments=tool_call["argument"]
     )
-
+    
     return {
         **state,
-        "observation": response.content
+        "tool_call": tool_call,
+        "observation": result,
+        "step_count": state.get("step_count", 0)+1
     }
     
 def policy_gateway_node(state: AgentState) -> AgentState:

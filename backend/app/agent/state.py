@@ -1,14 +1,17 @@
-from typing import TypedDict
+from typing import Any, TypedDict
 
+
+class ToolCall(TypedDict):
+    name: str
+    arguments: dict[str, Any]
 
 class AgentState(TypedDict):
     query: str
 
     plan: str
 
-    tool_name: str
-    tool_input: str
-    observation: str
+    tool_call: ToolCall | None
+    observation: Any
 
     retrieved_context: str
 
