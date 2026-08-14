@@ -11,7 +11,10 @@ class AgentState(TypedDict):
     plan: str
 
     tool_call: ToolCall | None
+    tool_history: list[ToolCall]
+
     observation: Any
+    observation_history: list[Any]
 
     retrieved_context: str
 

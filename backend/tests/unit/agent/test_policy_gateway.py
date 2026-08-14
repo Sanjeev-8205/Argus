@@ -8,7 +8,11 @@ def test_policy_gateway_returns_tools():
         "query": "What is the remote work policy?",
         "plan": "Retrieve the remote work policy and use it to answer.",
         "tool_call": {"name": "retrieve_documents", "arguments": {"query": "What is the remote work policy?"}},
+        "tool_history": [
+            {"name": "retrieve_documents", "arguments": {"query": "What is the remote work policy?"}}
+        ],
         "observation": None,
+        "observation_history": [],
         "retrieved_context": "",
         "messages": [],
         "final_answer": "",
@@ -28,7 +32,9 @@ def test_policy_gateway_raises_error_without_tools():
             "query": "What is the remote work policy?",
             "plan": "Retrieve the remote work policy and use it to answer.",
             "tool_call": None,
+            "tool_history": [],
             "observation": None,
+            "observation_history": [],
             "retrieved_context": "",
             "messages": [],
             "final_answer": "",

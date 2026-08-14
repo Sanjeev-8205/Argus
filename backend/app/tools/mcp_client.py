@@ -14,6 +14,23 @@ SERVER_PARAMS = StdioServerParameters(
     ]
 )
 
+async def tool_list() -> list[dict[str, Any]]:
+    async with stdio_client(SERVER_PARAMS) as (read, write):
+        async with ClientSession(read, write) as session:
+
+            await session.initialize()
+
+            tools = await session.list_tools()
+
+        return [
+            {
+                "name": tool.name,
+                "description": tool.description,
+                "schema": tool.input_schema
+            }
+            for tool in tools.tools
+        ]
+    
 async def call_tool(tool_name, arguments: dict[str, Any]) -> object:
     async with stdio_client(SERVER_PARAMS) as (read, write):  # noqa: SIM117
         async with ClientSession(read, write) as session:
@@ -45,12 +62,14 @@ async def call_tool(tool_name, arguments: dict[str, Any]) -> object:
             return result.content
 
 async def main() -> None:
-    result = await call_tool(
-        tool_name="retrieve_documents",
-        arguments={"query": "What is the company policy?"}
-    )
+    tools = await tool_list()
 
-    print(result)
+    print("Available MCP tools:")
+
+    for tool in tools:
+        print(f"\nName: {tool['name']}")
+        print(f"Description: {tool['description']}")
+        print(f"Input schema: {tool['input_schema']}")
 
 if __name__ == "__main__":
     asyncio.run(main())

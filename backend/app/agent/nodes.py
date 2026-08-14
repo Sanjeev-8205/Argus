@@ -1,43 +1,40 @@
 from langchain_core.messages import HumanMessage, SystemMessage
 
+from app.agent.prompts import (
+    get_action_prompt,
+    get_answer_prompt,
+    get_planner_prompt,
+    get_reflect_prompt,
+)
 from app.agent.state import AgentState
-from app.tools.mcp_client import call_tool
+from app.tools.mcp_client import call_tool, tool_list
 
-PLANNER_SYSTEM_PROMPT = """You are the planning component of Argus.
-
-Your job is to create a concise execution plan for the user's request.
-
-Determine:
-1. What information is required.
-2. Which tool or tools may be required.
-3. The order in which those tools should be used.
-4. When enough information will be available to answer.
-
-Do not answer the user's question.
-Do not execute tools.
-Return only the execution plan.
-"""
-
-ANSWER_SYSTEM_PROMPT = """
-You are a helpful assistant.
-Answer the user's question using the retrieved information provided by the user.
-
-Rules:
-- Ground your answer in the retrieved information.
-- Do not invent information that is not present in the retrieved information.
-- If the retrieved information is insufficient, say so.
-- Keep the answer concise.
-"""
 
 def plan_node(state: AgentState, llm) -> AgentState:
+    history_context = ""
 
+    for index, (tool_call, observation) in enumerate(
+        zip(state["tool_history"], state["observation_history"], start=1)):
+
+        history_context += f"""
+Tool Call {index}:
+{tool_call}
+
+Observation {index}:
+{observation}"""
+    
     response = llm.invoke(
         [
             SystemMessage(
-                content=PLANNER_SYSTEM_PROMPT
+                content=get_planner_prompt()
             ),
             HumanMessage(
-                content=f"User Query: {state["query"]}"
+                content=f"""
+User Query:
+{state["query"]}
+
+Previous execution history:
+{history_context}"""
             )
         ]
     )
@@ -48,10 +45,42 @@ def plan_node(state: AgentState, llm) -> AgentState:
         "step_count": state.get("step_count", 0)
     }
     
-def act_node(state: AgentState) -> AgentState:
+async def act_node(state: AgentState, llm) -> AgentState:
+    history_context = ""
+
+    for index, (tool_call, observation) in enumerate(
+        zip(state["tool_history"], state["observation_history"])):
+
+        history_context += f"""
+Tool Call {index}:
+{tool_call}
+
+Observation {index}:
+{observation}"""
+
+    available_tools = await tool_list()
+    tool_names = [tool["name"] for tool in available_tools]
+
+    response = llm.invoke(
+        [
+            SystemMessage(content=get_action_prompt()),
+            HumanMessage(content=f"""
+Plan:
+{state["plan"]}
+
+Available Tools:
+{available_tools}
+
+Previous execution history:
+{history_context}""")
+        ]
+    )
+
+    if response.content.strip() not in tool_names:
+        raise ValueError("LLM selected an unavailable tool.")
 
     tool_call = {
-        "name": "retrieve_documents",
+        "name": response.content,
         "arguments": {"query": state["query"]}
     }
     
@@ -85,10 +114,18 @@ async def execute_tool_node(state: AgentState) -> AgentState:
     return {
         **state,
         "observation": result,
+        "tool_history": [
+            *state.get("tool_history", []),
+            tool_call
+        ],
+        "observation_history": [
+            *state.get("observation_history", []),
+            result
+        ],
         "step_count": state.get("step_count", 0)+1
     }
 
-def reflect_node(state: AgentState) -> AgentState:
+def reflect_node(state: AgentState, llm) -> AgentState:
     step_count = state.get("step_count", 0)
     max_steps = state.get("max_steps", 5)
 
@@ -105,22 +142,54 @@ def reflect_node(state: AgentState) -> AgentState:
             "should_continue": False
         }
 
-    return {
-        **state,
-        "should_continue": False
-    }
+    next_step = llm.invoke(
+        [
+            SystemMessage(content=get_reflect_prompt()),
+            HumanMessage(content=f"""
+User's Query:
+{state["query"]}
+
+Plan:
+{state["plan"]}
+
+Tool Call History:
+{state["tool_history"]}
+
+Observation History:
+{state["observation_history"]}""")
+        ]
+    )
+
+    valid_responses = ["content", "answer"]
+    if next_step.content.strip().lower() not in valid_responses:
+        raise ValueError("LLM generated an invalid response.")
+
+    if next_step.content.lower() == "continue":
+        return {
+            **state,
+            "should_continue": True
+        }
+
+    else:
+        return {
+            **state,
+            "should_continue": False
+        }
 
 
 def answer_node(state: AgentState, llm) -> AgentState:
 
     prompt = [
-        SystemMessage(content=ANSWER_SYSTEM_PROMPT),
+        SystemMessage(content=get_answer_prompt()),
         HumanMessage(content=f"""
 User's query:
 {state["query"]}
 
-Observations:
-{state["observation"]}""")
+All Tool Calls:
+{state["tool_history"]}
+
+All Observations:
+{state["observation_history"]}""")
     ]
 
     answer = llm.invoke(prompt)

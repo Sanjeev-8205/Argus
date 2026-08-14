@@ -18,6 +18,12 @@ def test_answer_node():
             "name": "retrieve_documents",
             "arguments": "What is the remote work policy?"
         },
+        "tool_history": [
+            {
+                "name": "retrieve_documents",
+                "arguments": "What is the remote work policy?"
+            }
+        ],
         "observation": {
             "result": [
                 {
@@ -27,6 +33,17 @@ def test_answer_node():
                 }
             ]
         },
+        "observation_history": [
+            {
+                "result": [
+                    {
+                        "document_id": "company_policy",
+                        "chunk_id": "company_policy_0",
+                        "text": "company policies..."
+                    }
+                ]
+            }
+        ],
         "retrieved_context": "",
         "messages": [],
         "final_answer": "",
