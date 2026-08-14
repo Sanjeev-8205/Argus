@@ -21,7 +21,10 @@ distro==1.9.0
 executing==2.2.1
 fastapi==0.141.1
 filelock==3.32.2
+filetype==1.2.0
 fsspec==2026.7.0
+google-auth==2.56.3
+google-genai==2.18.1
 grpcio==1.83.0
 h11==0.16.0
 h2==4.4.1
@@ -49,6 +52,7 @@ jsonschema-specifications==2025.9.1
 jupyter-client==8.9.1
 jupyter-core==5.9.1
 langchain-core==1.5.4
+langchain-google-genai==4.3.3
 langchain-protocol==0.0.18
 langgraph==1.2.11
 langgraph-checkpoint==4.2.0
@@ -99,6 +103,8 @@ protobuf==7.35.1
 psutil==7.2.2
 ptyprocess==0.7.0
 pure-eval==0.2.3
+pyasn1==0.6.4
+pyasn1-modules==0.4.2
 pycparser==3.0
 pydantic==2.13.4
 pydantic-core==2.46.4

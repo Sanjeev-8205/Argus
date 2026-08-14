@@ -1,12 +1,7 @@
-from unittest.mock import AsyncMock, patch
-
-import pytest
-
 from app.agent.nodes import act_node
 
 
-@pytest.mark.asyncio
-async def test_act_node():
+def test_act_node():
 
     state = {
         "query": "What is the remote work policy?",
@@ -21,28 +16,8 @@ async def test_act_node():
         "should_continue": False,
     }
 
-    retrieval_result = {
-        "result": [
-            {
-                "document_id": "company_policy",
-                "chunk_id": "company_policy_4",
-                "text": "Remote work expectations...",
-                "score": 0.9
-            }
-        ]
-    }
+    response = act_node(state)
 
-    with patch("app.agent.nodes.call_tool", new=AsyncMock(return_value=retrieval_result)) as mock_call:
-
-        result = await act_node(state)
-
-    mock_call.assert_awaited_once_with(
-        tool_name="retrieve_documents",
-        arguments={
-            "query": "What is the remote work policy?"
-        }
-    )
-
-    assert result["tool_call"]["name"] == "retrieve_documents"
-    assert result["observation"] == retrieval_result
-    assert result["step_count"] == 1
+    assert response["tool_call"] is not None
+    assert response["tool_call"]["name"] == "retrieve_documents"
+    assert response["tool_call"]["arguments"]["query"] == state["query"]

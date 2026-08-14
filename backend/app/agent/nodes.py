@@ -18,16 +18,15 @@ Do not execute tools.
 Return only the execution plan.
 """
 
-ACT_SYSTEM_PROMPT = """You are the action-selection component of Argus.
+ANSWER_SYSTEM_PROMPT = """
+You are a helpful assistant.
+Answer the user's question using the retrieved information provided by the user.
 
-Given the user's request and the current execution plan, determine the next
-tool that should be called.
-
-Return:
-- the tool name
-- the arguments required by that tool
-
-Do not execute the tool yourself.
+Rules:
+- Ground your answer in the retrieved information.
+- Do not invent information that is not present in the retrieved information.
+- If the retrieved information is insufficient, say so.
+- Keep the answer concise.
 """
 
 def plan_node(state: AgentState, llm) -> AgentState:
@@ -49,30 +48,84 @@ def plan_node(state: AgentState, llm) -> AgentState:
         "step_count": state.get("step_count", 0)
     }
     
-async def act_node(state: AgentState) -> AgentState:
+def act_node(state: AgentState) -> AgentState:
 
     tool_call = {
         "name": "retrieve_documents",
-        "argument": {"query": state["query"]}
+        "arguments": {"query": state["query"]}
     }
-
-    result = await call_tool(
-        tool_name=tool_call["name"],
-        arguments=tool_call["argument"]
-    )
     
     return {
         **state,
-        "tool_call": tool_call,
-        "observation": result,
-        "step_count": state.get("step_count", 0)+1
+        "tool_call": tool_call
     }
     
 def policy_gateway_node(state: AgentState) -> AgentState:
-    raise NotImplementedError
+    tool_call = state.get("tool_call")
+
+    if tool_call is None:
+        raise RuntimeError("Policy gateway received no tool call")
+
+    return {
+        **state,
+        "tool_call": tool_call
+    }
+
+async def execute_tool_node(state: AgentState) -> AgentState:
+    tool_call = state["tool_call"]
+
+    if tool_call is None:
+        raise RuntimeError("No tool call to execute")
+
+    result = await call_tool(
+        tool_name=tool_call["name"],
+        arguments=tool_call["arguments"]
+    )
+
+    return {
+        **state,
+        "observation": result,
+        "step_count": state.get("step_count", 0)+1
+    }
 
 def reflect_node(state: AgentState) -> AgentState:
-    raise NotImplementedError
+    step_count = state.get("step_count", 0)
+    max_steps = state.get("max_steps", 5)
 
-def answer_node(state: AgentState) -> AgentState:
-    raise NotImplementedError
+    if step_count>=max_steps:
+        return{
+            **state,
+            "should_continue": False
+        }
+
+    observation = state.get("observation", None)
+    if observation is None:
+        return {
+            **state,
+            "should_continue": False
+        }
+
+    return {
+        **state,
+        "should_continue": False
+    }
+
+
+def answer_node(state: AgentState, llm) -> AgentState:
+
+    prompt = [
+        SystemMessage(content=ANSWER_SYSTEM_PROMPT),
+        HumanMessage(content=f"""
+User's query:
+{state["query"]}
+
+Observations:
+{state["observation"]}""")
+    ]
+
+    answer = llm.invoke(prompt)
+
+    return {
+        **state,
+        "final_answer": answer.content
+    }
