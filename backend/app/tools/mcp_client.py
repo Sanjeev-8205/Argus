@@ -1,4 +1,4 @@
-import asyncio
+from contextlib import AsyncExitStack
 from typing import Any
 
 from mcp import ClientSession, StdioServerParameters
@@ -14,13 +14,35 @@ SERVER_PARAMS = StdioServerParameters(
     ]
 )
 
-async def tool_list() -> list[dict[str, Any]]:
-    async with stdio_client(SERVER_PARAMS) as (read, write):
-        async with ClientSession(read, write) as session:
+class MCPClient:
+    def __init__(self):
+        self._exit_stack = AsyncExitStack()
+        self.session: ClientSession | None=None
 
-            await session.initialize()
+    async def __aenter__(self):
+        read, write = await self._exit_stack.enter_async_context(
+            stdio_client(SERVER_PARAMS)
+        )
 
-            tools = await session.list_tools()
+        self.session = await self._exit_stack.enter_async_context(
+            ClientSession(read, write)
+        )
+
+        await self.session.initialize()
+
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb):
+        self.session=None
+        await self._exit_stack.aclose()
+        
+    async def tool_list(self) -> list[dict[str, Any]]:
+        if self.session is None:
+            raise RuntimeError("MCP client is not connected")
+
+        print("Calling MCP tools")
+        tools = await self.session.list_tools()
+        print("MCP tools list retrieved")
 
         return [
             {
@@ -30,46 +52,24 @@ async def tool_list() -> list[dict[str, Any]]:
             }
             for tool in tools.tools
         ]
-    
-async def call_tool(tool_name, arguments: dict[str, Any]) -> object:
-    async with stdio_client(SERVER_PARAMS) as (read, write):  # noqa: SIM117
-        async with ClientSession(read, write) as session:
+        
+    async def call_tool(self, tool_name: str, arguments: dict[str, Any]) -> object:
+        if self.session is None:
+            raise RuntimeError("MCP client is not connected")
 
-            await session.initialize()
+        print("Before session.call_tool()")
+        result = await self.session.call_tool(
+            tool_name,
+            arguments
+        )
+        print("After session.call_tool()")
 
-            tools = await session.list_tools()
-
-            available_tools = [tool.name for tool in tools.tools]
-
-            if tool_name not in available_tools:
-                raise RuntimeError(
-                    "MCP server does not expose retrieve_documents"
-                )
-
-            result = await session.call_tool(
-                "retrieve_documents",
-                arguments=arguments
+        if result.is_error:
+            raise RuntimeError(
+                f"MCP tool {tool_name} failed: {result}"
             )
 
-            if result.is_error:
-                raise RuntimeError(
-                f"MCP retrieval failed: {result}"
-            )
+        if result.structured_content is not None:
+            return result.structured_content
 
-            if result.structured_content is not None:
-                return result.structured_content
-
-            return result.content
-
-async def main() -> None:
-    tools = await tool_list()
-
-    print("Available MCP tools:")
-
-    for tool in tools:
-        print(f"\nName: {tool['name']}")
-        print(f"Description: {tool['description']}")
-        print(f"Input schema: {tool['input_schema']}")
-
-if __name__ == "__main__":
-    asyncio.run(main())
+        return result.content

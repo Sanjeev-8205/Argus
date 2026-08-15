@@ -7,14 +7,14 @@ from app.agent.prompts import (
     get_reflect_prompt,
 )
 from app.agent.state import AgentState
-from app.tools.mcp_client import call_tool, tool_list
+from app.tools.mcp_client import MCPClient
 
 
 def plan_node(state: AgentState, llm) -> AgentState:
     history_context = ""
 
     for index, (tool_call, observation) in enumerate(
-        zip(state["tool_history"], state["observation_history"], start=1)):
+        zip(state["tool_history"], state["observation_history"]), start=1):
 
         history_context += f"""
 Tool Call {index}:
@@ -45,11 +45,11 @@ Previous execution history:
         "step_count": state.get("step_count", 0)
     }
     
-async def act_node(state: AgentState, llm) -> AgentState:
+async def act_node(state: AgentState, llm, client: MCPClient, available_tools: list[str]) -> AgentState:
     history_context = ""
 
     for index, (tool_call, observation) in enumerate(
-        zip(state["tool_history"], state["observation_history"])):
+        zip(state["tool_history"], state["observation_history"]), start=1):
 
         history_context += f"""
 Tool Call {index}:
@@ -58,7 +58,6 @@ Tool Call {index}:
 Observation {index}:
 {observation}"""
 
-    available_tools = await tool_list()
     tool_names = [tool["name"] for tool in available_tools]
 
     response = llm.invoke(
@@ -76,11 +75,11 @@ Previous execution history:
         ]
     )
 
-    if response.content.strip() not in tool_names:
+    if response.content[0]["text"].strip() not in tool_names:
         raise ValueError("LLM selected an unavailable tool.")
 
     tool_call = {
-        "name": response.content,
+        "name": response.content[0]["text"],
         "arguments": {"query": state["query"]}
     }
     
@@ -100,13 +99,13 @@ def policy_gateway_node(state: AgentState) -> AgentState:
         "tool_call": tool_call
     }
 
-async def execute_tool_node(state: AgentState) -> AgentState:
+async def execute_tool_node(state: AgentState, client: MCPClient) -> AgentState:
     tool_call = state["tool_call"]
 
     if tool_call is None:
         raise RuntimeError("No tool call to execute")
 
-    result = await call_tool(
+    result = await client.call_tool(
         tool_name=tool_call["name"],
         arguments=tool_call["arguments"]
     )
@@ -161,10 +160,10 @@ Observation History:
     )
 
     valid_responses = ["content", "answer"]
-    if next_step.content.strip().lower() not in valid_responses:
+    if next_step.content[0]["text"].strip().lower() not in valid_responses:
         raise ValueError("LLM generated an invalid response.")
 
-    if next_step.content.lower() == "continue":
+    if next_step.content[0]["text"].lower() == "continue":
         return {
             **state,
             "should_continue": True

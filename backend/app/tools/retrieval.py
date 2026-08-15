@@ -6,7 +6,13 @@ mcp = MCPServer("argus_server")
 
 retrieval_service = RetrievalService()
 
-@mcp.tool()
+@mcp.tool(
+    description=(
+            "Search the organization's indexed documents for information "
+            "relevant to the user's query. Returns ranked document chunks "
+            "with metadata and relevance scores."
+        )
+    )
 def retrieve_documents(query: str) -> list[dict]:
 
     results = retrieval_service.retrieve(query)

@@ -1,43 +1,52 @@
 import asyncio
 
 from app.agent.graph import agent
+from app.agent.llm import get_llm
+from app.tools.mcp_client import MCPClient
 
 
 async def main():
-    state = {
-        "query": "What are the company's remote work expectations?",
-        "plan": "",
-        "tool_call": None,
-        "tool_history": [],
-        "observation": None,
-        "observation_history": [],
-        "retrieved_context": "",
-        "messages": [],
-        "final_answer": "",
-        "step_count": 0,
-        "max_steps": 5,
-        "should_continue": False,
-    }
+    llm = get_llm()
 
-    result = await agent.ainvoke(state)
+    async with MCPClient() as client:
 
-    print("\nFINAL STATE")
-    print("=" * 60)
+        available_tools = await client.tool_list()
 
-    print("Plan:")
-    print(result["plan"])
+        agent_ = await agent(llm, client, available_tools)
+        state = {
+            "query": "What are the company's remote work expectations and leave policy?",
+            "plan": "",
+            "tool_call": None,
+            "tool_history": [],
+            "observation": None,
+            "observation_history": [],
+            "retrieved_context": "",
+            "messages": [],
+            "final_answer": "",
+            "step_count": 0,
+            "max_steps": 5,
+            "should_continue": False,
+        }
 
-    print("\nTool call:")
-    print(result["tool_call"])
+        result = await (agent_).ainvoke(state)
 
-    print("\nObservation:")
-    print(result["observation"])
+        print("\nFINAL STATE")
+        print("=" * 60)
 
-    print("\nFinal answer:")
-    print(result["final_answer"])
+        print("Plan:")
+        print(result["plan"])
 
-    print("\nStep count:")
-    print(result["step_count"])
+        print("\nTool call:")
+        print(result["tool_call"])
+
+        print("\nObservation:")
+        print(result["observation"])
+
+        print("\nFinal answer:")
+        print(result["final_answer"])
+
+        print("\nStep count:")
+        print(result["step_count"])
 
 if __name__ == "__main__":
     asyncio.run(main())

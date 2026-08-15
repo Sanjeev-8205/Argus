@@ -9,7 +9,7 @@ from app.agent.nodes import (
     reflect_node,
 )
 from app.agent.state import AgentState
-from app.agent.llm import get_llm
+
 
 def route_after_reflect(state: AgentState) -> str:
     if state["should_continue"] is True:
@@ -17,21 +17,31 @@ def route_after_reflect(state: AgentState) -> str:
     
     return "answer"
 
-def build_agent():
-    llm = get_llm()
+async def build_agent(llm, mcp_client, available_tools):
 
     agent_builder = StateGraph(AgentState)
-
-    agent_builder.add_node("act", act_node)
 
     agent_builder.add_node(
         "plan",
         lambda state: plan_node(state, llm)
     )
 
+    async def act(state):
+        return await act_node(state, llm, mcp_client, available_tools)
+    
+    agent_builder.add_node("act", act)
+
     agent_builder.add_node("policy", policy_gateway_node)
-    agent_builder.add_node("tool", execute_tool_node)
-    agent_builder.add_node("reflect", reflect_node)
+
+    async def execute_tool(state):
+        return await execute_tool_node(state, mcp_client)
+    
+    agent_builder.add_node("tool", execute_tool)
+
+    agent_builder.add_node(
+        "reflect", 
+        lambda state: reflect_node(state, llm)
+    )
     
     agent_builder.add_node(
         "answer", 
@@ -57,4 +67,7 @@ def build_agent():
 
     return agent_builder.compile()
 
-agent = build_agent()
+async def agent(llm, client, available_tools):
+    agent = await build_agent(llm, client, available_tools)
+
+    return agent
